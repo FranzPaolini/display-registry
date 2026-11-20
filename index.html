@@ -19,7 +19,7 @@
 
 <script>
 (async function () {
-  const { CFG, loadDevices, typeInfo, images, productImages, versionStatus, daysSince, deviceUrl, esc } = Registry;
+  const { CFG, loadDevices, typeInfo, images, productImages, versionStatus, daysSince, esc } = Registry;
   const { kindOf, KIND_LABEL, geometry, physicalSize, equipmentSvg, sizeSvg } = Equipment;
   const app = document.getElementById("app");
   document.getElementById("brand").textContent = CFG.title || "Display Registry";
@@ -55,6 +55,9 @@
     if (v.kind === "ahead") return `<span class="badge info">Build di sviluppo</span>`;
     return "";
   }
+
+  // Ritorno all'elenco: se la pagina è stata aperta da un QR (?id=) serve ricaricarla senza parametro.
+  function listHref() { return queryId ? location.pathname : "#"; }
 
   function fmtDate(s) {
     const t = Date.parse(s);
@@ -124,7 +127,7 @@
     app.innerHTML = `
       <section class="product">
         <div class="product-head">
-          <nav class="crumbs"><a href="./">Tutti i display</a><span>•</span><span>${esc(tipo)}</span></nav>
+          <nav class="crumbs"><a href="${listHref()}">Tutti i display</a><span>•</span><span>${esc(tipo)}</span></nav>
           <h1>${esc(d.nome || d.id)}</h1>
           <p class="subtitle">${esc(subtitle)}</p>
         </div>
@@ -226,7 +229,7 @@
       const items = list.filter(d => !q || Object.values(d).join(" ").toLowerCase().includes(q));
       grid.innerHTML = items.map(d => {
         return `
-        <a class="tile" href="${esc(deviceUrl(d.id))}">
+        <a class="tile" href="#${esc(d.id)}">
           <div class="tile-media">${productVisual(d)}</div>
           <div class="tile-body">
             <div class="tile-kicker">${esc(d.id)} · ${esc(d.tipo || "")}</div>
@@ -241,14 +244,27 @@
     draw("");
   }
 
-  try {
-    const list = await loadDevices();
-    const id = new URLSearchParams(location.search).get("id");
+  // Il display da mostrare arriva dal QR (?id=DSP-001) oppure dall'ancora (#DSP-001),
+  // usata per navigare dall'elenco alla scheda senza ricaricare la pagina.
+  const queryId = new URLSearchParams(location.search).get("id");
+  const currentId = () => decodeURIComponent(location.hash.slice(1)) || queryId;
+  let list = [];
+  document.getElementById("brand").href = listHref();
+
+  function route() {
+    const id = currentId();
+    window.scrollTo(0, 0);
     if (id) {
       const d = list.find(x => x.id.toLowerCase() === id.toLowerCase());
       if (d) renderDetail(d);
-      else app.innerHTML = `<section class="block"><a class="back" href="./">← Tutti i display</a><h1>${esc(id)}</h1><p>Questo ID non è (più) nel registro.</p></section>`;
+      else app.innerHTML = `<section class="block"><a class="back" href="${listHref()}">← Tutti i display</a><h1>${esc(id)}</h1><p>Questo ID non è (più) nel registro.</p></section>`;
     } else renderList(list);
+  }
+
+  try {
+    list = await loadDevices();
+    route();
+    window.addEventListener("hashchange", route);
   } catch (e) {
     app.innerHTML = `<section class="block"><p class="stale">${esc(e.message)}</p></section>`;
   }
