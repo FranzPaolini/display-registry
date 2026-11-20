@@ -22,10 +22,7 @@ window.REGISTRY_CONFIG = {
 
   // Ultima versione rilasciata per ogni software (usata se latestVersionsUrl è vuoto).
   // Se un display ha una versione più vecchia viene segnalato "da aggiornare".
-  latestVersions: {
-    "Console SW": "5.2.0",
-    "Rower FW": "1.8.3"
-  },
+  latestVersions: {},
 
   // Dopo quanti giorni senza aggiornamento dei dati mostrare un avviso.
   staleAfterDays: 14,

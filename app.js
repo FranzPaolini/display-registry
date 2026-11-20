@@ -91,11 +91,20 @@
 
   // Le specifiche del prodotto (scheda Prodotti, prese dal sito) valgono per ogni console
   // di quel prodotto; un valore scritto nella riga del display ha la precedenza.
+  // Le voci della console descritta sul sito valgono solo se la console sul tavolo ha la
+  // stessa diagonale (es. una Skillrun da 10" non eredita il "22"" della pagina prodotto).
   const PRODUCT_ONLY = new Set(["immagine", "descrizione", "fonte"]);
+  const CONSOLE_FIELDS = new Set(["tipo_console", "pollici", "touch", "pannello", "risoluzione"]);
+  const inches = v => parseFloat(String(v ?? "").replace(",", "."));
   function withProduct(d) {
     const p = typeInfo(d);
     const merged = {};
-    Object.entries(p).forEach(([k, v]) => { if (v !== "" && v != null && !PRODUCT_ONLY.has(k)) merged[k] = v; });
+    const otherConsole = inches(d.pollici) && inches(p.pollici) && inches(d.pollici) !== inches(p.pollici);
+    Object.entries(p).forEach(([k, v]) => {
+      if (v === "" || v == null || PRODUCT_ONLY.has(k)) return;
+      if (otherConsole && CONSOLE_FIELDS.has(k)) return;
+      merged[k] = v;
+    });
     Object.entries(d).forEach(([k, v]) => { if (v !== "" && v != null) merged[k] = v; else if (!(k in merged)) merged[k] = v; });
     return merged;
   }
