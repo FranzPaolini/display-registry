@@ -1,0 +1,130 @@
+// Logica condivisa: caricamento dati, parsing CSV, utilità.
+(function () {
+  const CFG = window.REGISTRY_CONFIG || {};
+
+  function parseCSV(text) {
+    const rows = [];
+    let row = [], field = "", inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (inQuotes) {
+        if (c === '"' && text[i + 1] === '"') { field += '"'; i++; }
+        else if (c === '"') inQuotes = false;
+        else field += c;
+      } else if (c === '"') inQuotes = true;
+      else if (c === ",") { row.push(field); field = ""; }
+      else if (c === "\n" || c === "\r") {
+        if (c === "\r" && text[i + 1] === "\n") i++;
+        row.push(field); rows.push(row); row = []; field = "";
+      } else field += c;
+    }
+    if (field !== "" || row.length) { row.push(field); rows.push(row); }
+    const header = (rows.shift() || []).map(h => h.trim().toLowerCase().replace(/\s+/g, "_"));
+    return rows
+      .filter(r => r.some(v => v.trim() !== ""))
+      .map(r => Object.fromEntries(header.map((h, i) => [h, (r[i] || "").trim()])));
+  }
+
+  async function fetchTable(url) {
+    const sep = url.includes("?") ? "&" : "?";
+    const res = await fetch(url + sep + "t=" + Date.now(), { cache: "no-store" });
+    if (!res.ok) throw new Error("Impossibile caricare i dati (" + res.status + ")");
+    const text = await res.text();
+    const trimmed = text.trim();
+    return trimmed.startsWith("[") || trimmed.startsWith("{") ? JSON.parse(trimmed) : parseCSV(text);
+  }
+
+  // Ultime versioni lette dalla scheda "Ultime versioni" del Google Sheet
+  // (colonne: Software, Ultima versione). Se manca, resta quanto scritto in config.js.
+  async function loadLatestVersions() {
+    if (!CFG.latestVersionsUrl) return;
+    try {
+      const rows = await fetchTable(CFG.latestVersionsUrl);
+      const map = { ...(CFG.latestVersions || {}) };
+      rows.forEach(r => { if (r.software && r.ultima_versione) map[r.software] = r.ultima_versione; });
+      CFG.latestVersions = map;
+    } catch (e) {
+      console.warn("Ultime versioni non caricate:", e);
+    }
+  }
+
+  // Tipologie di equipment dalla scheda "Tipologie" (colonne: Tipo, Immagine, Descrizione).
+  // Servono a mostrare una foto vera per ogni tipo; senza, si usa l'illustrazione disegnata.
+  const types = {};
+  async function loadTypes() {
+    Object.entries(CFG.types || {}).forEach(([k, v]) => { types[k.toLowerCase()] = typeof v === "string" ? { immagine: v } : v; });
+    if (!CFG.typesUrl) return;
+    try {
+      const rows = await fetchTable(CFG.typesUrl);
+      rows.forEach(r => { if (r.tipo) types[r.tipo.trim().toLowerCase()] = r; });
+    } catch (e) {
+      console.warn("Tipologie non caricate:", e);
+    }
+  }
+  function typeInfo(d) { return types[String(d.tipo || "").trim().toLowerCase()] || {}; }
+
+  // Una cella può contenere più link a immagini, separati da spazio, virgola o a capo.
+  // I link di Google Drive ("Condividi > chiunque abbia il link") vengono convertiti
+  // in un indirizzo che il browser può mostrare come immagine.
+  function images(value) {
+    return String(value || "").split(/[\s,]+/)
+      .filter(u => /^https?:\/\//i.test(u) || /\.(png|jpe?g|webp|gif|svg)$/i.test(u))
+      .map(u => {
+        const m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{20,})/);
+        return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1600` : u;
+      });
+  }
+
+  // Immagini del prodotto di riferimento: colonna "Immagine prodotto" del display,
+  // altrimenti la foto del suo tipo nella scheda Tipologie.
+  function productImages(d) {
+    const own = images(d.immagine_prodotto || d.immagine);
+    return own.length ? own : images(typeInfo(d).immagine);
+  }
+
+  async function loadDevices() {
+    const [list] = await Promise.all([fetchTable(CFG.dataUrl || "data/devices.json"), loadLatestVersions(), loadTypes()]);
+    return (Array.isArray(list) ? list : list.devices || [])
+      .filter(d => d && d.id)
+      .map(d => ({ ...d, id: String(d.id).trim() }));
+  }
+
+  function cmpVersion(a, b) {
+    const pa = String(a).split(/[.\-]/).map(n => parseInt(n, 10) || 0);
+    const pb = String(b).split(/[.\-]/).map(n => parseInt(n, 10) || 0);
+    for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+      const d = (pa[i] || 0) - (pb[i] || 0);
+      if (d) return d > 0 ? 1 : -1;
+    }
+    return 0;
+  }
+
+  function versionStatus(d) {
+    const latest = (CFG.latestVersions || {})[d.software];
+    if (!latest || !d.versione) return { kind: "unknown", latest };
+    const c = cmpVersion(d.versione, latest);
+    return { kind: c === 0 ? "ok" : c < 0 ? "behind" : "ahead", latest };
+  }
+
+  function daysSince(dateStr) {
+    if (!dateStr) return null;
+    const t = Date.parse(dateStr);
+    if (isNaN(t)) return null;
+    return Math.floor((Date.now() - t) / 86400000);
+  }
+
+  function baseUrl() {
+    if (CFG.publicBaseUrl) return CFG.publicBaseUrl.replace(/\/+$/, "") + "/";
+    return location.href.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
+  }
+
+  function deviceUrl(id) {
+    return baseUrl() + "?id=" + encodeURIComponent(id);
+  }
+
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  window.Registry = { CFG, loadDevices, typeInfo, images, productImages, versionStatus, daysSince, deviceUrl, esc };
+})();

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Etichette QR</title>
+<link rel="stylesheet" href="style.css">
+<script src="qrcode.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+<style>
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+  .toolbar button { padding: 10px 16px; border-radius: 10px; border: 0; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; }
+  .sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .label-card {
+    background: #fff; color: #111; border: 1px dashed #bbb; border-radius: 10px;
+    padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center;
+    break-inside: avoid;
+  }
+  .label-card svg { width: 140px; height: 140px; }
+  .label-card .lid { font: 700 18px ui-monospace, Menlo, monospace; margin-top: 4px; }
+  .label-card .lname { font-size: 12px; color: #444; }
+  .label-card .hint { font-size: 10px; color: #777; margin-top: 4px; }
+  label.pick { display: flex; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); }
+  @media print {
+    .top, .toolbar, .pick { display: none !important; }
+    body { background: #fff; }
+    main { max-width: none; padding: 0; }
+    .sheet { grid-template-columns: repeat(4, 1fr); gap: 4mm; }
+    .label-card { border: 1px dashed #999; }
+    .label-card.off { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="./" class="brand">← Registro</a>
+  <nav><a href="#" onclick="print();return false">Stampa</a></nav>
+</header>
+<main>
+  <div class="toolbar">
+    <button onclick="print()">Stampa etichette</button>
+    <span class="muted small">Il QR contiene solo l'ID: non va mai ristampato quando cambiano versione o specifiche. Deseleziona quelle già stampate.</span>
+  </div>
+  <div class="sheet" id="sheet"><p class="muted">Caricamento…</p></div>
+</main>
+<script>
+(async function () {
+  const { loadDevices, deviceUrl, esc } = Registry;
+  const sheet = document.getElementById("sheet");
+  try {
+    const list = await loadDevices();
+    sheet.innerHTML = list.map(d => {
+      const qr = qrcode(0, "M");
+      qr.addData(deviceUrl(d.id));
+      qr.make();
+      return `<div class="label-card">
+        ${qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true })}
+        <div class="lid">${esc(d.id)}</div>
+        <div class="lname">${esc(d.nome || "")}</div>
+        <div class="hint">Scansiona per specifiche e versione</div>
+        <label class="pick"><input type="checkbox" checked onchange="this.closest('.label-card').classList.toggle('off', !this.checked)"> stampa</label>
+      </div>`;
+    }).join("");
+  } catch (e) {
+    sheet.innerHTML = `<p class="stale">${esc(e.message)}</p>`;
+  }
+})();
+</script>
+</body>
+</html>

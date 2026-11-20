@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Display Registry</title>
+<link rel="stylesheet" href="style.css">
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script src="equipment.js"></script>
+</head>
+<body>
+<header class="top">
+  <a href="./" class="brand" id="brand">Display Registry</a>
+  <nav><a href="labels.html">Stampa QR</a></nav>
+</header>
+<main id="app"><p class="loading">Caricamento…</p></main>
+
+<script>
+(async function () {
+  const { CFG, loadDevices, typeInfo, images, productImages, versionStatus, daysSince, deviceUrl, esc } = Registry;
+  const { kindOf, KIND_LABEL, geometry, physicalSize, equipmentSvg, sizeSvg } = Equipment;
+  const app = document.getElementById("app");
+  document.getElementById("brand").textContent = CFG.title || "Display Registry";
+
+  // Gruppi della scheda tecnica: [chiave, etichetta, suffisso]
+  const GROUPS = [
+    { title: "Display", rows: [
+      ["tipo", "Tipologia"], ["pollici", "Diagonale", "″"], ["area", "Area visibile"],
+      ["risoluzione", "Risoluzione"], ["formato", "Formato"], ["orientamento", "Orientamento"] ] },
+    { title: "Hardware", rows: [
+      ["produttore", "Produttore"], ["modello", "Modello"], ["player", "Player / HW"] ] },
+    { title: "Software", rows: [
+      ["software", "Software"], ["versione", "Versione installata"], ["ultima", "Ultima release"],
+      ["aggiornato_il", "Aggiornato il"] ] },
+    { title: "Collocazione", rows: [
+      ["stato", "Stato"], ["posizione", "Posizione"], ["referente", "Referente"] ] }
+  ];
+  const KNOWN = new Set(["id", "nome", "note", "descrizione", "immagine", "immagine_prodotto", "formato", "ultima", "area",
+    ...GROUPS.flatMap(g => g.rows.map(r => r[0]))]);
+
+  function stateClass(s) {
+    s = (s || "").toLowerCase();
+    if (s.includes("guast") || s.includes("ko")) return "bad";
+    if (s.includes("test") || s.includes("ripar")) return "warn";
+    if (s.includes("attiv") || s.includes("ok")) return "good";
+    return "neutral";
+  }
+
+  function versionBadge(d) {
+    const v = versionStatus(d);
+    if (v.kind === "ok") return `<span class="badge good">Aggiornato</span>`;
+    if (v.kind === "behind") return `<span class="badge warn">Da aggiornare</span>`;
+    if (v.kind === "ahead") return `<span class="badge info">Build di sviluppo</span>`;
+    return "";
+  }
+
+  function fmtDate(s) {
+    const t = Date.parse(s);
+    return isNaN(t) ? s : new Date(t).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+  }
+
+  // Prodotto di riferimento: immagine dalla colonna "Immagine prodotto" del foglio;
+  // se manca, un disegno del tipo di equipment.
+  function productVisual(d) {
+    const img = productImages(d)[0];
+    return img ? `<img src="${esc(img)}" alt="${esc(d.modello || d.tipo || "Prodotto")}" loading="lazy">` : equipmentSvg(d);
+  }
+
+  // Galleria: prodotto di riferimento (una o più immagini) + dimensione del display.
+  function slides(d) {
+    const imgs = productImages(d);
+    const s = imgs.length
+      ? imgs.map((u, i) => ({ label: imgs.length > 1 ? `Prodotto ${i + 1}` : "Prodotto", html: `<img src="${esc(u)}" alt="${esc(d.modello || d.nome || d.id)}">` }))
+      : [{ label: "Prodotto", html: equipmentSvg(d) }];
+    if (d.pollici || d.risoluzione) s.push({ label: "Dimensione display", html: sizeSvg(d) });
+    return s;
+  }
+
+  function renderDetail(d) {
+    document.title = `${d.nome || d.id} · Scheda tecnica`;
+    const geo = geometry(d);
+    const size = physicalSize(d);
+    const vs = versionStatus(d);
+    const data = { ...d,
+      formato: geo.hasRes ? geo.ratio : "",
+      area: size ? `${size.width} × ${size.height} cm${/wall/.test(kindOf(d.tipo)) ? " (per pannello)" : ""}` : "",
+      ultima: vs.latest || "",
+      aggiornato_il: d.aggiornato_il ? fmtDate(d.aggiornato_il) : "" };
+    const n = daysSince(d.aggiornato_il);
+    const stale = n !== null && n > (CFG.staleAfterDays || 14);
+    const tipo = d.tipo || KIND_LABEL[kindOf(d.tipo)];
+    const subtitle = d.descrizione || typeInfo(d).descrizione || [d.produttore, d.modello].filter(Boolean).join(" ");
+
+    const extra = Object.entries(d).filter(([k, v]) => !KNOWN.has(k) && v !== "" && v != null);
+    const groups = [...GROUPS];
+    if (extra.length) groups.push({ title: "Altre informazioni", rows: extra.map(([k]) => [k, k.replace(/_/g, " ")]) });
+
+    const value = (k, suf) => {
+      const v = data[k];
+      if (k === "stato") return `<span class="dot ${stateClass(v)}"></span>${esc(v)}`;
+      if (k === "versione") return `${esc(v)} ${versionBadge(d)}`;
+      return esc(v) + (suf || "");
+    };
+    const specHtml = groups.map((g, i) => {
+      const rows = g.rows.filter(([k]) => data[k] !== undefined && data[k] !== "");
+      if (!rows.length) return "";
+      return `<details class="spec-group" ${i < 2 || window.innerWidth > 800 ? "open" : ""}>
+        <summary><h3>${g.title}</h3><span class="chev" aria-hidden="true"></span></summary>
+        <dl>${rows.map(([k, l, suf]) => `<div class="spec-row"><dt>${esc(l)}</dt><dd>${value(k, suf)}</dd></div>`).join("")}</dl>
+      </details>`;
+    }).join("");
+
+    const sl = slides(d);
+    const hl = [
+      ["Diagonale", d.pollici ? `${esc(d.pollici)}″` : "—"],
+      ["Risoluzione", d.risoluzione ? esc(d.risoluzione) : "—"],
+      ["Area visibile", size ? `${size.width}×${size.height} cm` : "—"],
+      ["Orientamento", d.orientamento ? esc(d.orientamento) : "—"]
+    ];
+
+    app.className = "detail";
+    app.innerHTML = `
+      <section class="product">
+        <div class="product-head">
+          <nav class="crumbs"><a href="./">Tutti i display</a><span>•</span><span>${esc(tipo)}</span></nav>
+          <h1>${esc(d.nome || d.id)}</h1>
+          <p class="subtitle">${esc(subtitle)}</p>
+        </div>
+        <div class="stage">
+          <div class="stage-track" id="track">${sl.map((s, i) => `<div class="slide" data-i="${i}">${s.html}</div>`).join("")}</div>
+          <div class="stage-pills">${sl.map((s, i) => `<button type="button" data-go="${i}">${esc(s.label)}</button>`).join("")}</div>
+          ${sl.length > 1 ? `<button class="arrow prev" type="button" aria-label="Precedente">‹</button><button class="arrow next" type="button" aria-label="Successiva">›</button>` : ""}
+        </div>
+        <div class="thumbs">${sl.map((s, i) => `<button type="button" class="thumb" data-go="${i}" aria-label="${esc(s.label)}">${s.html}<span>${esc(s.label)}</span></button>`).join("")}</div>
+        <div class="product-tags">
+          <span class="code">${esc(d.id)}</span>
+          ${d.stato ? `<span class="badge ${stateClass(d.stato)}">${esc(d.stato)}</span>` : ""}
+          ${versionBadge(d)}
+        </div>
+      </section>
+
+      <section class="highlights">
+        ${hl.map(([l, v]) => `<div class="hl"><span class="hl-value">${v}</span><span class="hl-label">${l}</span></div>`).join("")}
+      </section>
+
+      <nav class="anchors">
+        <a href="#software">Software</a><a href="#specifiche">Specifiche tecniche</a>${d.note ? `<a href="#note">Note</a>` : ""}
+      </nav>
+
+      <section class="block" id="software">
+        <h2>Software installato</h2>
+        <div class="sw-card ${vs.kind}">
+          <div>
+            <div class="sw-name">${esc(d.software || "Software")}</div>
+            <div class="sw-ver">${esc(d.versione || "—")}</div>
+          </div>
+          <div class="sw-side">
+            ${vs.kind === "behind" ? `<div class="sw-msg">Disponibile la <b>${esc(vs.latest)}</b></div>`
+              : vs.kind === "ok" ? `<div class="sw-msg">È l'ultima release</div>`
+              : vs.kind === "ahead" ? `<div class="sw-msg">Più recente dell'ultima release (${esc(vs.latest)})</div>` : ""}
+            <div class="sw-date ${stale ? "stale" : ""}">${n === null ? "Data di aggiornamento non indicata"
+              : `Dati aggiornati ${n === 0 ? "oggi" : n === 1 ? "ieri" : n + " giorni fa"}${stale ? ", da verificare" : ""}`}</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="specifiche">
+        <h2>Specifiche tecniche</h2>
+        <div class="spec-grid">${specHtml}</div>
+      </section>
+
+      ${d.note ? `<section class="block" id="note"><h2>Note</h2><p class="note">${esc(d.note)}</p></section>` : ""}
+
+      <div class="buybar">
+        <div class="buybar-inner">
+          <div class="bb-ver">
+            <span class="bb-num">${esc(d.versione || "—")}</span>
+            <span class="bb-sub">${esc(d.software || "")}${vs.kind === "behind" ? ` · da aggiornare a ${esc(vs.latest)}` : vs.kind === "ok" ? " · ultima release" : ""}</span>
+          </div>
+          <a class="bb-btn" href="#specifiche">Scheda tecnica</a>
+        </div>
+      </div>
+    `;
+    setupGallery(sl.length);
+  }
+
+  function setupGallery(count) {
+    const track = document.getElementById("track");
+    let cur = 0;
+    const go = i => {
+      cur = (i + count) % count;
+      track.style.transform = `translateX(-${cur * 100}%)`;
+      document.querySelectorAll("[data-go]").forEach(b => b.classList.toggle("on", +b.dataset.go === cur));
+    };
+    document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => go(+b.dataset.go)));
+    document.querySelector(".arrow.prev")?.addEventListener("click", () => go(cur - 1));
+    document.querySelector(".arrow.next")?.addEventListener("click", () => go(cur + 1));
+    let x0 = null;
+    track.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener("touchend", e => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 40) go(cur + (dx < 0 ? 1 : -1));
+      x0 = null;
+    });
+    go(0);
+  }
+
+  function renderList(list) {
+    const outdated = list.filter(d => versionStatus(d).kind === "behind").length;
+    const broken = list.filter(d => stateClass(d.stato) === "bad").length;
+    app.className = "listing";
+    app.innerHTML = `
+      <section class="list-head">
+        <nav class="crumbs"><span>Tutti i display</span></nav>
+        <h1>I nostri display</h1>
+        <div class="list-stats"><span><b>${list.length}</b> display</span><span><b>${outdated}</b> da aggiornare</span><span><b>${broken}</b> guasti</span></div>
+        <input id="q" class="search" type="search" placeholder="Cerca per ID, nome, tipo, versione…">
+      </section>
+      <div class="grid" id="list"></div>`;
+    const grid = document.getElementById("list");
+    const draw = q => {
+      q = q.trim().toLowerCase();
+      const items = list.filter(d => !q || Object.values(d).join(" ").toLowerCase().includes(q));
+      grid.innerHTML = items.map(d => {
+        return `
+        <a class="tile" href="${esc(deviceUrl(d.id))}">
+          <div class="tile-media">${productVisual(d)}</div>
+          <div class="tile-body">
+            <div class="tile-kicker">${esc(d.id)} · ${esc(d.tipo || "")}</div>
+            <div class="tile-name">${esc(d.nome || "")}</div>
+            <div class="tile-specs">${[d.pollici && d.pollici + "″", d.risoluzione, d.software && `${d.software} ${d.versione || ""}`].filter(Boolean).map(esc).join(" · ")}</div>
+            <div class="tile-badges">${d.stato ? `<span class="badge ${stateClass(d.stato)}">${esc(d.stato)}</span>` : ""}${versionBadge(d)}</div>
+          </div>
+        </a>`;
+      }).join("") || `<p class="empty">Nessun risultato</p>`;
+    };
+    document.getElementById("q").addEventListener("input", e => draw(e.target.value));
+    draw("");
+  }
+
+  try {
+    const list = await loadDevices();
+    const id = new URLSearchParams(location.search).get("id");
+    if (id) {
+      const d = list.find(x => x.id.toLowerCase() === id.toLowerCase());
+      if (d) renderDetail(d);
+      else app.innerHTML = `<section class="block"><a class="back" href="./">← Tutti i display</a><h1>${esc(id)}</h1><p>Questo ID non è (più) nel registro.</p></section>`;
+    } else renderList(list);
+  } catch (e) {
+    app.innerHTML = `<section class="block"><p class="stale">${esc(e.message)}</p></section>`;
+  }
+})();
+</script>
+</body>
+</html>
