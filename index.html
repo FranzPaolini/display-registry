@@ -24,24 +24,29 @@
   const app = document.getElementById("app");
   document.getElementById("brand").textContent = CFG.title || "Display Registry";
 
-  // Gruppi della scheda tecnica: [chiave, etichetta, suffisso]
+  // Gruppi della scheda tecnica, sul modello delle sezioni "Console and Display" e
+  // "Connectivity" del sito, più i dati di laboratorio. [chiave, etichetta, suffisso]
   const GROUPS = [
-    { title: "Prodotto", rows: [
-      ["linea", "Linea"], ["prodotto", "Prodotto"], ["modello", "Modello"] ] },
-    { title: "Display", rows: [
-      ["pollici", "Diagonale", "″"], ["risoluzione", "Risoluzione"], ["formato", "Formato"],
-      ["area", "Area visibile"], ["pannello", "Tecnologia pannello"], ["bonding", "Optical bonding"],
-      ["touch", "Touch"], ["orientamento", "Orientamento"] ] },
+    { title: "Console e display", rows: [
+      ["tipo_console", "Tipo console"], ["pollici", "Diagonale", "″"], ["risoluzione", "Risoluzione"],
+      ["formato", "Formato"], ["area", "Area visibile"], ["pannello", "Tecnologia pannello"],
+      ["bonding", "Optical bonding"], ["touch", "Touch"], ["cardiofrequenza", "Monitoraggio cardiofrequenza"],
+      ["audio", "Sistema audio"] ] },
     { title: "Hardware", rows: [
       ["versione_hw", "Versione HW"], ["tipologia_hw", "Tipologia HW"], ["cpu", "Processore"],
       ["ram", "RAM"], ["storage", "Memoria"], ["sistema_operativo", "Sistema operativo"] ] },
+    { title: "Connettività", rows: [
+      ["rete", "Wi-Fi / rete"], ["lettore_nfc", "Lettore NFC (RFID)"],
+      ["connessioni_esterne", "Dispositivi esterni"], ["apple_gymkit", "Apple GymKit"] ] },
     { title: "Software", rows: [
       ["software", "Software"], ["versione", "Versione installata"], ["ultima", "Ultima release"],
       ["aggiornato_il", "Aggiornato il"] ] },
+    { title: "Prodotto", rows: [
+      ["linea", "Linea"], ["prodotto", "Prodotto"], ["modello", "Modello"], ["pagina_sito", "Scheda sul sito"] ] },
     { title: "Collocazione", rows: [
       ["stato", "Stato"], ["posizione", "Posizione"], ["referente", "Referente"] ] }
   ];
-  const KNOWN = new Set(["id", "nome", "note", "descrizione", "immagine", "immagine_prodotto", "tipo", "formato", "ultima", "area",
+  const KNOWN = new Set(["id", "nome", "note", "descrizione", "immagine", "immagine_prodotto", "tipo", "fonte", "formato", "ultima", "area",
     ...GROUPS.flatMap(g => g.rows.map(r => r[0]))]);
 
   function stateClass(s) {
@@ -116,6 +121,7 @@
       const v = data[k];
       if (k === "stato") return `<span class="dot ${stateClass(v)}"></span>${esc(v)}`;
       if (k === "versione") return `${esc(v)} ${versionBadge(d)}`;
+      if (k === "pagina_sito") return /^https?:\/\//.test(v) ? `<a class="ext" href="${esc(v)}" target="_blank" rel="noopener">Apri la scheda ↗</a>` : esc(v);
       return esc(v) + (suf || "");
     };
     const specHtml = groups.map((g, i) => {

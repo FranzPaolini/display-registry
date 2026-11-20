@@ -24,6 +24,18 @@ lette da un'unica fonte dati. Quando cambia qualcosa si aggiorna una riga: l'eti
 Senza `latestVersionsUrl`, le ultime versioni si impostano in `config.js` → `latestVersions`.
 Ogni display con una versione più vecchia viene segnalato come **"Da aggiornare"**.
 
+## Specifiche dal sito
+Le specifiche di console, display e connettività di ogni prodotto si prendono dalla sua pagina su
+technogym.com con `tools/importa_prodotti.py`:
+
+```
+python3 tools/importa_prodotti.py https://www.technogym.com/it-IT/product/technogym-run_DGK0.html > prodotti.csv
+```
+
+Il CSV ha le colonne della scheda *Prodotti* del foglio. Le pagine nuove (es. Technogym Run) hanno
+la sezione "Console and Display"; per quelle precedenti il display viene ricavato dal testo e la
+colonna *Fonte* lo indica. Nella scheda del display, ogni cella vuota prende il valore del prodotto.
+
 ## Immagini
 La scheda mostra una galleria con due viste:
 - **Prodotto**: le immagini della colonna *Immagine prodotto* (anche più link separati da virgola;

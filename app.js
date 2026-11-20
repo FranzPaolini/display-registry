@@ -86,7 +86,18 @@
     const [list] = await Promise.all([fetchTable(CFG.dataUrl || "data/devices.json"), loadLatestVersions(), loadTypes()]);
     return (Array.isArray(list) ? list : list.devices || [])
       .filter(d => d && d.id)
-      .map(d => ({ ...d, id: String(d.id).trim() }));
+      .map(d => withProduct({ ...d, id: String(d.id).trim() }));
+  }
+
+  // Le specifiche del prodotto (scheda Prodotti, prese dal sito) valgono per ogni console
+  // di quel prodotto; un valore scritto nella riga del display ha la precedenza.
+  const PRODUCT_ONLY = new Set(["immagine", "descrizione", "fonte"]);
+  function withProduct(d) {
+    const p = typeInfo(d);
+    const merged = {};
+    Object.entries(p).forEach(([k, v]) => { if (v !== "" && v != null && !PRODUCT_ONLY.has(k)) merged[k] = v; });
+    Object.entries(d).forEach(([k, v]) => { if (v !== "" && v != null) merged[k] = v; else if (!(k in merged)) merged[k] = v; });
+    return merged;
   }
 
   function cmpVersion(a, b) {

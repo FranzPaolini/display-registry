@@ -14,7 +14,7 @@ window.REGISTRY_CONFIG = {
 
   // Link CSV della scheda "Prodotti" del Google Sheet (opzionale):
   // un'immagine per ogni prodotto (Run, Bike…), usata quando il display non ha la sua.
-  typesUrl: "",
+  typesUrl: "data/prodotti.csv",
 
   // Link CSV della scheda "Ultime versioni" del Google Sheet (opzionale).
   // Se impostato, sostituisce la lista latestVersions qui sotto.
@@ -24,7 +24,7 @@ window.REGISTRY_CONFIG = {
   // Se un display ha una versione più vecchia viene segnalato "da aggiornare".
   latestVersions: {
     "Console SW": "5.2.0",
-    "Strength SW": "1.8.3"
+    "Rower FW": "1.8.3"
   },
 
   // Dopo quanti giorni senza aggiornamento dei dati mostrare un avviso.
