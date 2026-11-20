@@ -30,14 +30,14 @@
     { title: "Console e display", rows: [
       ["tipo_console", "Tipo console"], ["pollici", "Diagonale", "″"], ["risoluzione", "Risoluzione"],
       ["formato", "Formato"], ["area", "Area visibile"], ["pannello", "Tecnologia pannello"],
-      ["bonding", "Optical bonding"], ["touch", "Touch"], ["cardiofrequenza", "Monitoraggio cardiofrequenza"],
+      ["bonding", "Optical bonding"], ["touch", "Touch"], ["cardiofrequenza", "Monitoraggio frequenza cardiaca"],
       ["audio", "Sistema audio"] ] },
     { title: "Hardware", rows: [
       ["versione_hw", "Versione HW"], ["tipologia_hw", "Tipologia HW"], ["cpu", "Processore"],
       ["ram", "RAM"], ["storage", "Memoria"], ["sistema_operativo", "Sistema operativo"] ] },
     { title: "Connettività", rows: [
-      ["rete", "Wi-Fi / rete"], ["lettore_nfc", "Lettore NFC (RFID)"],
-      ["connessioni_esterne", "Dispositivi esterni"], ["apple_gymkit", "Apple GymKit"] ] },
+      ["rete", "Wi-Fi"], ["lettore_nfc", "Lettore NFC (RFID)"],
+      ["connessioni_esterne", "Connettività dispositivi esterni"], ["apple_gymkit", "Compatibilità Apple GymKit"] ] },
     { title: "Software", rows: [
       ["software", "Software"], ["versione", "Versione installata"], ["ultima", "Ultima release"],
       ["aggiornato_il", "Aggiornato il"] ] },
@@ -127,7 +127,7 @@
     const specHtml = groups.map((g, i) => {
       const rows = g.rows.filter(([k]) => data[k] !== undefined && data[k] !== "");
       if (!rows.length) return "";
-      return `<details class="spec-group" ${i < 2 || window.innerWidth > 800 ? "open" : ""}>
+      return `<details class="spec-group" ${i < 3 || window.innerWidth > 800 ? "open" : ""}>
         <summary><h3>${g.title}</h3><span class="chev" aria-hidden="true"></span></summary>
         <dl>${rows.map(([k, l, suf]) => `<div class="spec-row"><dt>${esc(l)}</dt><dd>${value(k, suf)}</dd></div>`).join("")}</dl>
       </details>`;
