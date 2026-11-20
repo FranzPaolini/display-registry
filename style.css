@@ -128,6 +128,11 @@ a { color: inherit; text-decoration: none; }
 .sil-diag { stroke: rgba(255,255,255,.35); stroke-width: 1; stroke-dasharray: 4 4; }
 .sil-label { fill: #fff; font: 700 22px "Helvetica Neue", Arial, sans-serif; }
 
+/* Segnaposto prodotto senza immagine */
+.ph-name { fill: var(--text); opacity: .16; font: 300 64px "Helvetica Neue", Arial, sans-serif; letter-spacing: .04em; }
+.ph-line { fill: var(--muted); font: 700 13px "Helvetica Neue", Arial, sans-serif; letter-spacing: .3em; }
+.ph-hint { fill: var(--muted); font: 400 12px "Helvetica Neue", Arial, sans-serif; }
+
 /* Disegni equipment / dimensioni */
 .dim-screen { fill: var(--soft); stroke: var(--text); stroke-width: 2; }
 .dim-diag { stroke: var(--muted); stroke-dasharray: 5 5; }

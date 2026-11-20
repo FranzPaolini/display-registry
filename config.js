@@ -12,8 +12,8 @@ window.REGISTRY_CONFIG = {
   // Lascia vuoto per usare automaticamente l'indirizzo corrente.
   publicBaseUrl: "https://franzpaolini.github.io/display-registry/",
 
-  // Link CSV della scheda "Tipologie" del Google Sheet (opzionale):
-  // una foto per ogni tipo di equipment. Senza, la scheda usa un'illustrazione disegnata.
+  // Link CSV della scheda "Prodotti" del Google Sheet (opzionale):
+  // un'immagine per ogni prodotto (Run, Bike…), usata quando il display non ha la sua.
   typesUrl: "",
 
   // Link CSV della scheda "Ultime versioni" del Google Sheet (opzionale).
@@ -23,9 +23,8 @@ window.REGISTRY_CONFIG = {
   // Ultima versione rilasciata per ogni software (usata se latestVersionsUrl è vuoto).
   // Se un display ha una versione più vecchia viene segnalato "da aggiornare".
   latestVersions: {
-    "Player": "4.3.0",
-    "Kiosk": "2.1.4",
-    "Signage CMS": "7.0.2"
+    "Console SW": "5.2.0",
+    "Strength SW": "1.8.3"
   },
 
   // Dopo quanti giorni senza aggiornamento dei dati mostrare un avviso.

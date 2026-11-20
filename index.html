@@ -20,24 +20,28 @@
 <script>
 (async function () {
   const { CFG, loadDevices, typeInfo, images, productImages, versionStatus, daysSince, esc } = Registry;
-  const { kindOf, KIND_LABEL, geometry, physicalSize, equipmentSvg, sizeSvg } = Equipment;
+  const { geometry, physicalSize, sizeSvg } = Equipment;
   const app = document.getElementById("app");
   document.getElementById("brand").textContent = CFG.title || "Display Registry";
 
   // Gruppi della scheda tecnica: [chiave, etichetta, suffisso]
   const GROUPS = [
+    { title: "Prodotto", rows: [
+      ["linea", "Linea"], ["prodotto", "Prodotto"], ["modello", "Modello"] ] },
     { title: "Display", rows: [
-      ["tipo", "Tipologia"], ["pollici", "Diagonale", "″"], ["area", "Area visibile"],
-      ["risoluzione", "Risoluzione"], ["formato", "Formato"], ["orientamento", "Orientamento"] ] },
+      ["pollici", "Diagonale", "″"], ["risoluzione", "Risoluzione"], ["formato", "Formato"],
+      ["area", "Area visibile"], ["pannello", "Tecnologia pannello"], ["bonding", "Optical bonding"],
+      ["touch", "Touch"], ["orientamento", "Orientamento"] ] },
     { title: "Hardware", rows: [
-      ["produttore", "Produttore"], ["modello", "Modello"], ["player", "Player / HW"] ] },
+      ["versione_hw", "Versione HW"], ["tipologia_hw", "Tipologia HW"], ["cpu", "Processore"],
+      ["ram", "RAM"], ["storage", "Memoria"], ["sistema_operativo", "Sistema operativo"] ] },
     { title: "Software", rows: [
       ["software", "Software"], ["versione", "Versione installata"], ["ultima", "Ultima release"],
       ["aggiornato_il", "Aggiornato il"] ] },
     { title: "Collocazione", rows: [
       ["stato", "Stato"], ["posizione", "Posizione"], ["referente", "Referente"] ] }
   ];
-  const KNOWN = new Set(["id", "nome", "note", "descrizione", "immagine", "immagine_prodotto", "formato", "ultima", "area",
+  const KNOWN = new Set(["id", "nome", "note", "descrizione", "immagine", "immagine_prodotto", "tipo", "formato", "ultima", "area",
     ...GROUPS.flatMap(g => g.rows.map(r => r[0]))]);
 
   function stateClass(s) {
@@ -64,19 +68,28 @@
     return isNaN(t) ? s : new Date(t).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
   }
 
-  // Prodotto di riferimento: immagine dalla colonna "Immagine prodotto" del foglio;
-  // se manca, un disegno del tipo di equipment.
+  // Prodotto di riferimento: immagine dalla colonna "Immagine prodotto" del foglio
+  // (o dalla scheda Prodotti); se manca, un riquadro con il nome del prodotto.
+  function placeholder(d) {
+    const name = String(d.prodotto || d.linea || "Prodotto").toUpperCase();
+    return `<svg viewBox="0 0 400 300" class="equip ph" role="img" aria-label="Immagine prodotto non disponibile">
+      <text x="200" y="${d.linea ? 138 : 155}" text-anchor="middle" class="ph-name" textLength="${Math.min(300, name.length * 34)}" lengthAdjust="spacingAndGlyphs">${esc(name)}</text>
+      ${d.linea ? `<text x="200" y="178" text-anchor="middle" class="ph-line">${esc(String(d.linea).toUpperCase())}</text>` : ""}
+      <text x="200" y="250" text-anchor="middle" class="ph-hint">Immagine prodotto da aggiungere nel foglio</text>
+    </svg>`;
+  }
+
   function productVisual(d) {
     const img = productImages(d)[0];
-    return img ? `<img src="${esc(img)}" alt="${esc(d.modello || d.tipo || "Prodotto")}" loading="lazy">` : equipmentSvg(d);
+    return img ? `<img src="${esc(img)}" alt="${esc(d.prodotto || d.modello || "Prodotto")}" loading="lazy">` : placeholder(d);
   }
 
   // Galleria: prodotto di riferimento (una o più immagini) + dimensione del display.
   function slides(d) {
     const imgs = productImages(d);
     const s = imgs.length
-      ? imgs.map((u, i) => ({ label: imgs.length > 1 ? `Prodotto ${i + 1}` : "Prodotto", html: `<img src="${esc(u)}" alt="${esc(d.modello || d.nome || d.id)}">` }))
-      : [{ label: "Prodotto", html: equipmentSvg(d) }];
+      ? imgs.map((u, i) => ({ label: imgs.length > 1 ? `Prodotto ${i + 1}` : "Prodotto", html: `<img src="${esc(u)}" alt="${esc(d.prodotto || d.nome || d.id)}">` }))
+      : [{ label: "Prodotto", html: placeholder(d) }];
     if (d.pollici || d.risoluzione) s.push({ label: "Dimensione display", html: sizeSvg(d) });
     return s;
   }
@@ -88,13 +101,12 @@
     const vs = versionStatus(d);
     const data = { ...d,
       formato: geo.hasRes ? geo.ratio : "",
-      area: size ? `${size.width} × ${size.height} cm${/wall/.test(kindOf(d.tipo)) ? " (per pannello)" : ""}` : "",
+      area: size ? `${size.width} × ${size.height} cm` : "",
       ultima: vs.latest || "",
       aggiornato_il: d.aggiornato_il ? fmtDate(d.aggiornato_il) : "" };
     const n = daysSince(d.aggiornato_il);
     const stale = n !== null && n > (CFG.staleAfterDays || 14);
-    const tipo = d.tipo || KIND_LABEL[kindOf(d.tipo)];
-    const subtitle = d.descrizione || typeInfo(d).descrizione || [d.produttore, d.modello].filter(Boolean).join(" ");
+    const subtitle = d.descrizione || typeInfo(d).descrizione || [d.prodotto, d.modello].filter(Boolean).join(" · ");
 
     const extra = Object.entries(d).filter(([k, v]) => !KNOWN.has(k) && v !== "" && v != null);
     const groups = [...GROUPS];
@@ -119,15 +131,15 @@
     const hl = [
       ["Diagonale", d.pollici ? `${esc(d.pollici)}″` : "—"],
       ["Risoluzione", d.risoluzione ? esc(d.risoluzione) : "—"],
-      ["Area visibile", size ? `${size.width}×${size.height} cm` : "—"],
-      ["Orientamento", d.orientamento ? esc(d.orientamento) : "—"]
+      ["Hardware", d.versione_hw ? esc(d.versione_hw) : "—"],
+      ["Bonding", d.bonding ? esc(d.bonding) : "—"]
     ];
 
     app.className = "detail";
     app.innerHTML = `
       <section class="product">
         <div class="product-head">
-          <nav class="crumbs"><a href="${listHref()}">Tutti i display</a><span>•</span><span>${esc(tipo)}</span></nav>
+          <nav class="crumbs"><a href="${listHref()}">Tutti i display</a>${[d.linea, d.prodotto].filter(Boolean).map(x => `<span>•</span><span>${esc(x)}</span>`).join("")}</nav>
           <h1>${esc(d.nome || d.id)}</h1>
           <p class="subtitle">${esc(subtitle)}</p>
         </div>
@@ -220,7 +232,7 @@
         <nav class="crumbs"><span>Tutti i display</span></nav>
         <h1>I nostri display</h1>
         <div class="list-stats"><span><b>${list.length}</b> display</span><span><b>${outdated}</b> da aggiornare</span><span><b>${broken}</b> guasti</span></div>
-        <input id="q" class="search" type="search" placeholder="Cerca per ID, nome, tipo, versione…">
+        <input id="q" class="search" type="search" placeholder="Cerca per ID, prodotto, HW, versione…">
       </section>
       <div class="grid" id="list"></div>`;
     const grid = document.getElementById("list");
@@ -232,9 +244,9 @@
         <a class="tile" href="#${esc(d.id)}">
           <div class="tile-media">${productVisual(d)}</div>
           <div class="tile-body">
-            <div class="tile-kicker">${esc(d.id)} · ${esc(d.tipo || "")}</div>
+            <div class="tile-kicker">${[d.id, d.linea, d.prodotto].filter(Boolean).map(esc).join(" · ")}</div>
             <div class="tile-name">${esc(d.nome || "")}</div>
-            <div class="tile-specs">${[d.pollici && d.pollici + "″", d.risoluzione, d.software && `${d.software} ${d.versione || ""}`].filter(Boolean).map(esc).join(" · ")}</div>
+            <div class="tile-specs">${[d.pollici && d.pollici + "″", d.risoluzione, d.versione_hw, d.versione && `SW ${d.versione}`].filter(Boolean).map(esc).join(" · ")}</div>
             <div class="tile-badges">${d.stato ? `<span class="badge ${stateClass(d.stato)}">${esc(d.stato)}</span>` : ""}${versionBadge(d)}</div>
           </div>
         </a>`;

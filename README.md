@@ -1,5 +1,9 @@
 # Display Registry
 
+Schede tecniche delle console sul tavolo di test: linea e prodotto (Cardio/Strength, Run, Bike…),
+display (pollici, risoluzione, pannello, optical bonding, touch), hardware (versione HW, CPU, RAM,
+memoria, sistema operativo) e versione software installata.
+
 Ogni display ha un **QR fisso** che contiene solo il suo ID (es. `DSP-003`).
 Scansionandolo si apre una pagina con le specifiche e la versione software **attuali**,
 lette da un'unica fonte dati. Quando cambia qualcosa si aggiorna una riga: l'etichetta resta quella.
@@ -12,9 +16,9 @@ lette da un'unica fonte dati. Quando cambia qualcosa si aggiorna una riga: l'eti
 ## Dove stanno i dati (scegline una)
 1. **`data/devices.json`**: lo modifichi direttamente su GitHub (icona matita, poi Commit).
 2. **Google Sheet** (consigliato se i dati li aggiornano persone non tecniche): il foglio "Display Registry"
-   ha quattro schede: **Display** (una riga per display), **Tipologie** (tipi di equipment, con foto
+   ha quattro schede: **Display** (una riga per console), **Prodotti** (Run, Bike…, con immagine
    facoltativa), **Ultime versioni** (ultima release per ogni software) e **Istruzioni**.
-   Vai su *File → Condividi → Pubblica sul web*, pubblica *Display*, *Tipologie* e *Ultime versioni*
+   Vai su *File → Condividi → Pubblica sul web*, pubblica *Display*, *Prodotti* e *Ultime versioni*
    in formato CSV e incolla i link in `config.js` (`dataUrl`, `typesUrl`, `latestVersionsUrl`). Le colonne aggiunte a destra compaiono da sole nella scheda del display.
 
 Senza `latestVersionsUrl`, le ultime versioni si impostano in `config.js` → `latestVersions`.
@@ -23,8 +27,8 @@ Ogni display con una versione più vecchia viene segnalato come **"Da aggiornare
 ## Immagini
 La scheda mostra una galleria con due viste:
 - **Prodotto**: le immagini della colonna *Immagine prodotto* (anche più link separati da virgola;
-  i link di Google Drive vengono convertiti in automatico). Se è vuota si usa la foto del tipo
-  nella scheda *Tipologie*, oppure un disegno del tipo di equipment.
+  i link di Google Drive vengono convertiti in automatico). Se è vuota si usa l'immagine del prodotto
+  nella scheda *Prodotti*, altrimenti un riquadro con il nome del prodotto.
 - **Dimensione display**: la sagoma dello schermo in scala, con la diagonale in pollici.
 
 ## Pubblicazione
