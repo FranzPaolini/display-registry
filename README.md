@@ -28,14 +28,12 @@ La scheda mostra una galleria con due viste:
 - **Dimensione display**: la sagoma dello schermo in scala, con la diagonale in pollici.
 
 ## Pubblicazione
-Il workflow `.github/workflows/display-registry-pages.yml` pubblica la cartella su GitHub Pages
-a ogni push su `main`. Per attivarlo vai su *Settings → Pages → Source: GitHub Actions*.
-Prima di stampare le etichette definitive, imposta `publicBaseUrl` in `config.js` con l'URL
-pubblico: è l'indirizzo che finisce dentro i QR.
-
-Va bene anche qualunque altro hosting statico (Netlify, un server interno, una cartella condivisa via HTTP).
+Il sito è pubblicato su https://franzpaolini.github.io/display-registry/ da GitHub Pages
+(workflow `.github/workflows/pages.yml`) a ogni modifica del branch `main`.
+I QR contengono `publicBaseUrl` (in `config.js`) più l'ID del display: non cambiarlo
+dopo aver stampato le etichette.
 
 ## Prova in locale
 ```
-cd display-registry && python3 -m http.server 8000
+python3 -m http.server 8000
 ```
