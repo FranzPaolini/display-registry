@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Display Registry</title>
-<link rel="stylesheet" href="style.css?v=20261121">
-<script src="config.js?v=20261121"></script>
-<script src="app.js?v=20261121"></script>
-<script src="equipment.js?v=20261121"></script>
+<link rel="stylesheet" href="style.css?v=20261121b">
+<script src="config.js?v=20261121b"></script>
+<script src="app.js?v=20261121b"></script>
+<script src="equipment.js?v=20261121b"></script>
 </head>
 <body>
 <header class="top">
@@ -187,15 +187,6 @@
 
       ${d.note ? `<section class="block" id="note"><h2>Note</h2><p class="note">${esc(d.note)}</p></section>` : ""}
 
-      <div class="buybar">
-        <div class="buybar-inner">
-          <div class="bb-ver">
-            <span class="bb-num">${esc(d.versione || "—")}</span>
-            <span class="bb-sub">${esc(d.software || "")}${vs.kind === "behind" ? ` · da aggiornare a ${esc(vs.latest)}` : vs.kind === "ok" ? " · ultima release" : ""}</span>
-          </div>
-          <button type="button" class="bb-btn" onclick="document.getElementById('specifiche').scrollIntoView({ behavior: 'smooth' })">Scheda tecnica</button>
-        </div>
-      </div>
     `;
     setupGallery(sl.length);
   }
