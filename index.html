@@ -167,10 +167,6 @@
         ${hl.map(([l, v]) => `<div class="hl"><span class="hl-value">${v}</span><span class="hl-label">${l}</span></div>`).join("")}
       </section>
 
-      <nav class="anchors">
-        <a href="#software">Software</a><a href="#specifiche">Specifiche tecniche</a>${d.note ? `<a href="#note">Note</a>` : ""}
-      </nav>
-
       <section class="block" id="software">
         <h2>Software installato</h2>
         <div class="sw-card ${vs.kind}">
@@ -201,7 +197,7 @@
             <span class="bb-num">${esc(d.versione || "—")}</span>
             <span class="bb-sub">${esc(d.software || "")}${vs.kind === "behind" ? ` · da aggiornare a ${esc(vs.latest)}` : vs.kind === "ok" ? " · ultima release" : ""}</span>
           </div>
-          <a class="bb-btn" href="#specifiche">Scheda tecnica</a>
+          <button type="button" class="bb-btn" onclick="document.getElementById('specifiche').scrollIntoView({ behavior: 'smooth' })">Scheda tecnica</button>
         </div>
       </div>
     `;
@@ -264,7 +260,11 @@
   // Il display da mostrare arriva dal QR (?id=DSP-001) oppure dall'ancora (#DSP-001),
   // usata per navigare dall'elenco alla scheda senza ricaricare la pagina.
   const queryId = new URLSearchParams(location.search).get("id");
-  const currentId = () => decodeURIComponent(location.hash.slice(1)) || queryId;
+  // L'ancora vale solo se è l'ID di un display: altri # (es. sezioni) non cambiano pagina.
+  const currentId = () => {
+    const h = decodeURIComponent(location.hash.slice(1));
+    return (h && list.some(x => x.id.toLowerCase() === h.toLowerCase())) ? h : queryId;
+  };
   let list = [];
   document.getElementById("brand").href = listHref();
 
