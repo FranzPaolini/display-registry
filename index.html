@@ -153,9 +153,7 @@
         <div class="stage">
           <div class="stage-track" id="track">${sl.map((s, i) => `<div class="slide" data-i="${i}">${s.html}</div>`).join("")}</div>
           <div class="stage-pills">${sl.map((s, i) => `<button type="button" data-go="${i}">${esc(s.label)}</button>`).join("")}</div>
-          ${sl.length > 1 ? `<button class="arrow prev" type="button" aria-label="Precedente">‹</button><button class="arrow next" type="button" aria-label="Successiva">›</button>` : ""}
         </div>
-        <div class="thumbs">${sl.map((s, i) => `<button type="button" class="thumb" data-go="${i}" aria-label="${esc(s.label)}">${s.html}<span>${esc(s.label)}</span></button>`).join("")}</div>
         <div class="product-tags">
           <span class="code">${esc(d.id)}</span>
           ${d.stato ? `<span class="badge ${stateClass(d.stato)}">${esc(d.stato)}</span>` : ""}
@@ -217,8 +215,6 @@
       document.querySelectorAll("[data-go]").forEach(b => b.classList.toggle("on", +b.dataset.go === cur));
     };
     document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => go(+b.dataset.go)));
-    document.querySelector(".arrow.prev")?.addEventListener("click", () => go(cur - 1));
-    document.querySelector(".arrow.next")?.addEventListener("click", () => go(cur + 1));
     let x0 = null;
     track.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
     track.addEventListener("touchend", e => {

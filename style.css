@@ -97,24 +97,6 @@ a { color: inherit; text-decoration: none; }
 }
 .stage-pills button + button { border-left: 1px solid var(--line); }
 .stage-pills button.on { background: var(--text); color: var(--bg); }
-.arrow {
-  position: absolute; top: 45%; width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
-  background: rgba(20,20,20,.75); color: #fff; font-size: 26px; line-height: 40px;
-}
-.arrow.prev { left: 16px; } .arrow.next { right: 16px; }
-.thumbs { display: flex; overflow-x: auto; scrollbar-width: none; gap: 2px; max-width: 1200px; margin: 0 auto; }
-.thumbs::-webkit-scrollbar { display: none; }
-.thumb {
-  flex: 0 0 auto; width: 180px; height: 120px; position: relative; border: 0; padding: 8px; cursor: pointer;
-  background: var(--stage); filter: brightness(.94); opacity: .7; transition: opacity .15s;
-}
-.thumb.on, .thumb:hover { opacity: 1; filter: none; }
-.thumb.on { box-shadow: inset 0 -3px 0 var(--text); }
-.thumb .equip, .thumb img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
-.thumb span {
-  position: absolute; left: 8px; bottom: 8px; font-size: 10px; font-weight: 700; letter-spacing: .08em;
-  text-transform: uppercase; color: var(--text); background: var(--bg); padding: 2px 6px; border-radius: 2px;
-}
 .product-tags { max-width: 1200px; margin: 0 auto; padding: 16px 24px 24px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .code {
   font: 700 13px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .04em;
@@ -248,9 +230,6 @@ a { color: inherit; text-decoration: none; }
   .product-head { padding: 18px 16px 4px; }
   .crumbs { margin-bottom: 16px; font-size: 14px; }
   .slide { height: 290px; padding: 8px 12px 60px; }
-  .arrow { width: 38px; height: 38px; line-height: 34px; font-size: 22px; }
-  .arrow.prev { left: 8px; } .arrow.next { right: 8px; }
-  .thumb { width: 33vw; height: 90px; }
   .product-tags { padding: 14px 16px 20px; }
   .buybar-inner { padding: 14px 16px calc(14px + env(safe-area-inset-bottom)); }
   .bb-num { font-size: 26px; }
