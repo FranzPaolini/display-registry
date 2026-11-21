@@ -146,18 +146,20 @@
     app.innerHTML = `
       <section class="product">
         <div class="product-head">
-          <nav class="crumbs"><a href="${listHref()}">Tutti i display</a>${[d.linea, d.prodotto].filter(Boolean).map(x => `<span>•</span><span>${esc(x)}</span>`).join("")}</nav>
+          <div class="head-top">
+            <nav class="crumbs"><a href="${listHref()}">Tutti i display</a>${[d.linea, d.prodotto].filter(Boolean).map(x => `<span>•</span><span>${esc(x)}</span>`).join("")}</nav>
+            <div class="head-tags">
+              <span class="code">${esc(d.id)}</span>
+              ${d.stato ? `<span class="badge ${stateClass(d.stato)}">${esc(d.stato)}</span>` : ""}
+              ${versionBadge(d)}
+            </div>
+          </div>
           <h1>${esc(d.nome || d.id)}</h1>
           <p class="subtitle">${esc(subtitle)}</p>
         </div>
         <div class="stage">
           <div class="stage-track" id="track">${sl.map((s, i) => `<div class="slide" data-i="${i}">${s.html}</div>`).join("")}</div>
           <div class="stage-pills">${sl.map((s, i) => `<button type="button" data-go="${i}">${esc(s.label)}</button>`).join("")}</div>
-        </div>
-        <div class="product-tags">
-          <span class="code">${esc(d.id)}</span>
-          ${d.stato ? `<span class="badge ${stateClass(d.stato)}">${esc(d.stato)}</span>` : ""}
-          ${versionBadge(d)}
         </div>
       </section>
 
