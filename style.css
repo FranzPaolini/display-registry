@@ -99,7 +99,8 @@ a { color: inherit; text-decoration: none; }
 .stage-pills button.on { background: var(--text); color: var(--bg); }
 .head-top { display: flex; justify-content: space-between; align-items: center; gap: 10px 16px; flex-wrap: wrap; margin-bottom: 22px; }
 .head-top .crumbs { margin-bottom: 0; }
-.head-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+/* ID e badge in alto: nascosti per ora (per mostrarli: display: flex) */
+.head-tags { display: none; flex-wrap: wrap; gap: 6px; align-items: center; }
 .product { padding-bottom: 12px; }
 .code {
   font: 700 13px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .04em;
