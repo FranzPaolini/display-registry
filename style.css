@@ -53,9 +53,6 @@ a { color: inherit; text-decoration: none; }
 .loading, .empty { padding: 40px 24px; color: var(--muted); text-align: center; }
 .stale { color: var(--warn) !important; font-weight: 600; }
 
-.eyebrow {
-  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; color: var(--muted);
-}
 .back { display: inline-block; font-size: 13px; color: var(--muted); margin-bottom: 28px; }
 .back:hover { color: var(--text); }
 
@@ -121,15 +118,6 @@ a { color: inherit; text-decoration: none; }
 .ph-line { fill: var(--muted); font: 700 13px "Helvetica Neue", Arial, sans-serif; letter-spacing: .3em; }
 .ph-hint { fill: var(--muted); font: 400 12px "Helvetica Neue", Arial, sans-serif; }
 
-/* Disegni equipment / dimensioni */
-.dim-screen { fill: var(--soft); stroke: var(--text); stroke-width: 2; }
-.dim-diag { stroke: var(--muted); stroke-dasharray: 5 5; }
-.dim-big { fill: var(--text); font: 300 40px "Helvetica Neue", Arial, sans-serif; }
-.dim-line { stroke: var(--text); stroke-width: 1.2; }
-.dim-txt { fill: var(--text); font: 600 14px "Helvetica Neue", Arial, sans-serif; }
-.dim-cap { fill: var(--muted); font: 600 12px "Helvetica Neue", Arial, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
-
-
 .highlights {
   display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--line);
   max-width: 1200px; margin: 0 auto;
@@ -138,7 +126,6 @@ a { color: inherit; text-decoration: none; }
 .hl:last-child { border-right: 0; }
 .hl-value { font-size: clamp(22px, 3vw, 34px); font-weight: 800; letter-spacing: -.01em; overflow-wrap: anywhere; }
 .hl-label { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); font-weight: 600; }
-
 
 .block { max-width: 1200px; margin: 0 auto; padding: 56px 24px 8px; scroll-margin-top: 64px; }
 .block h2 {
