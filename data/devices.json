@@ -1,7 +1,7 @@
 [
   {
     "id": "DSP-001",
-    "nome": "Skillrun 10\"",
+    "nome": "Skillrun",
     "tipo": "Cardio",
     "linea": "Skill",
     "prodotto": "Run",
@@ -19,13 +19,13 @@
     "stato": "Attivo",
     "posizione": "Scaffalone",
     "referente": "FPaolini",
-    "note": "Console da 10\" non presente sul sito: risoluzione indicata dal team",
+    "note": "",
     "descrizione": "",
     "immagine_prodotto": ""
   },
   {
     "id": "DSP-002",
-    "nome": "Biostrength Chest Press 10\"",
+    "nome": "Biostrength",
     "tipo": "Strength",
     "linea": "Biostrength",
     "prodotto": "Chest Press",
@@ -49,7 +49,7 @@
   },
   {
     "id": "DSP-003",
-    "nome": "Biostrength Chest Press 16\"",
+    "nome": "Biostrength",
     "tipo": "Strength",
     "linea": "Biostrength",
     "prodotto": "Chest Press",
@@ -67,13 +67,13 @@
     "stato": "Attivo",
     "posizione": "Scaffalone",
     "referente": "FPaolini",
-    "note": "Full HD",
+    "note": "",
     "descrizione": "",
     "immagine_prodotto": ""
   },
   {
     "id": "DSP-004",
-    "nome": "Artis Run 24\" (nuova)",
+    "nome": "Artis Run",
     "tipo": "Cardio",
     "linea": "Artis",
     "prodotto": "Run",
@@ -91,13 +91,13 @@
     "stato": "Attivo",
     "posizione": "Scaffalone",
     "referente": "FPaolini",
-    "note": "Nuova Artis in sviluppo con console da 24\": sul sito c'è ancora la Live 22\"",
+    "note": "",
     "descrizione": "",
     "immagine_prodotto": ""
   },
   {
     "id": "DSP-005",
-    "nome": "Artis Run 22\" Full HD",
+    "nome": "Artis Run",
     "tipo": "Cardio",
     "linea": "Artis",
     "prodotto": "Run",
@@ -115,13 +115,13 @@
     "stato": "Attivo",
     "posizione": "Scaffalone",
     "referente": "FPaolini",
-    "note": "Artis attuale, come sul sito. Bonding da confermare",
+    "note": "",
     "descrizione": "",
     "immagine_prodotto": ""
   },
   {
     "id": "DSP-006",
-    "nome": "Skillrun 22\"",
+    "nome": "Skillrun",
     "tipo": "Cardio",
     "linea": "Skill",
     "prodotto": "Run",
@@ -139,13 +139,13 @@
     "stato": "Attivo",
     "posizione": "Scaffalone",
     "referente": "FPaolini",
-    "note": "Risoluzione da indicare (non presente sul sito)",
+    "note": "",
     "descrizione": "",
     "immagine_prodotto": ""
   },
   {
     "id": "DSP-007",
-    "nome": "Skillrun 19\" HD",
+    "nome": "Skillrun",
     "tipo": "Cardio",
     "linea": "Skill",
     "prodotto": "Run",
@@ -163,13 +163,13 @@
     "stato": "Attivo",
     "posizione": "Scaffalone",
     "referente": "FPaolini",
-    "note": "Diagonale reale 18,x\": sul sito indicata come Live 19\"",
+    "note": "",
     "descrizione": "",
     "immagine_prodotto": ""
   },
   {
     "id": "DSP-008",
-    "nome": "Excite+ Synchro 16\"",
+    "nome": "Excite+ Synchro",
     "tipo": "Cardio",
     "linea": "Excite+",
     "prodotto": "Synchro",
@@ -193,7 +193,7 @@
   },
   {
     "id": "DSP-009",
-    "nome": "Excite+ Climb 16\"",
+    "nome": "Excite+ Climb",
     "tipo": "Cardio",
     "linea": "Excite+",
     "prodotto": "Climb",
@@ -211,7 +211,7 @@
     "stato": "Attivo",
     "posizione": "Scaffalone",
     "referente": "FPaolini",
-    "note": "Risoluzione da confermare",
+    "note": "",
     "descrizione": "",
     "immagine_prodotto": ""
   },
@@ -235,7 +235,7 @@
     "stato": "Attivo",
     "posizione": "Scaffalone",
     "referente": "FPaolini",
-    "note": "Diagonale presa dal sito (22\"): risoluzione da indicare",
+    "note": "",
     "descrizione": "",
     "immagine_prodotto": ""
   },
@@ -259,7 +259,7 @@
     "stato": "Attivo",
     "posizione": "Scaffalone",
     "referente": "FPaolini",
-    "note": "Dal sito: touchscreen Full HD 22\" orientabile",
+    "note": "",
     "descrizione": "",
     "immagine_prodotto": ""
   }
