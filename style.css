@@ -46,6 +46,8 @@ a { color: inherit; text-decoration: none; }
   height: 56px; padding: 0 24px; border-bottom: 1px solid var(--line); background: var(--bg);
   position: sticky; top: 0; z-index: 10;
 }
+/* Nelle singole schede la barra in alto (nome e Stampa QR) non serve */
+.is-detail .top { display: none; }
 .brand { font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: 14px; }
 .top nav a { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
 .loading, .empty { padding: 40px 24px; color: var(--muted); text-align: center; }

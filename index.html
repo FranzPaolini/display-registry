@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Display Registry</title>
-<link rel="stylesheet" href="style.css?v=20261121b">
-<script src="config.js?v=20261121b"></script>
-<script src="app.js?v=20261121b"></script>
-<script src="equipment.js?v=20261121b"></script>
+<link rel="stylesheet" href="style.css?v=20261123">
+<script src="config.js?v=20261123"></script>
+<script src="app.js?v=20261123"></script>
+<script src="equipment.js?v=20261123"></script>
 </head>
 <body>
 <header class="top">
@@ -143,6 +143,7 @@
     ];
 
     app.className = "detail";
+    document.body.classList.add("is-detail");
     app.innerHTML = `
       <section class="product">
         <div class="product-head">
@@ -215,6 +216,7 @@
     const outdated = list.filter(d => versionStatus(d).kind === "behind").length;
     const broken = list.filter(d => stateClass(d.stato) === "bad").length;
     app.className = "listing";
+    document.body.classList.remove("is-detail");
     app.innerHTML = `
       <section class="list-head">
         <nav class="crumbs"><span>Tutti i display</span></nav>
