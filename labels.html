@@ -20,16 +20,13 @@
   }
   .label-card svg { width: 140px; height: 140px; }
   .label-card .lid { font: 700 18px ui-monospace, Menlo, monospace; margin-top: 4px; }
-  .label-card .lname { font-size: 12px; color: #444; }
   .label-card .hint { font-size: 10px; color: #777; margin-top: 4px; }
-  label.pick { display: flex; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); }
   @media print {
-    .top, .toolbar, .pick { display: none !important; }
+    .top, .toolbar { display: none !important; }
     body { background: #fff; }
     main { max-width: none; padding: 0; }
     .sheet { grid-template-columns: repeat(4, 1fr); gap: 4mm; }
     .label-card { border: 1px dashed #999; }
-    .label-card.off { display: none; }
   }
 </style>
 </head>
@@ -41,7 +38,7 @@
 <main>
   <div class="toolbar">
     <button onclick="print()">Stampa etichette</button>
-    <span class="muted small">Il QR contiene solo l'ID: non va mai ristampato quando cambiano versione o specifiche. Deseleziona quelle già stampate.</span>
+    <span class="muted small">Il QR contiene solo l'ID: non va mai ristampato quando cambiano versione o specifiche.</span>
   </div>
   <div class="sheet" id="sheet"><p class="muted">Caricamento…</p></div>
 </main>
@@ -58,9 +55,7 @@
       return `<div class="label-card">
         ${qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true })}
         <div class="lid">${esc(d.id)}</div>
-        <div class="lname">${esc(d.nome || "")}</div>
         <div class="hint">Scansiona per specifiche e versione</div>
-        <label class="pick"><input type="checkbox" checked onchange="this.closest('.label-card').classList.toggle('off', !this.checked)"> stampa</label>
       </div>`;
     }).join("");
   } catch (e) {
