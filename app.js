@@ -51,17 +51,25 @@
   // Prodotti dalla scheda "Prodotti" (colonne: Prodotto, Linea, Immagine, Descrizione):
   // un'immagine per prodotto (es. Run, Bike) valida per tutti i display di quel prodotto.
   const types = {};
+  // Le chiavi si confrontano senza maiuscole, spazi e simboli ("Excite+ Synchro" = "excitesynchro").
+  const norm = v => String(v ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
   async function loadTypes() {
-    Object.entries(CFG.types || {}).forEach(([k, v]) => { types[k.toLowerCase()] = typeof v === "string" ? { immagine: v } : v; });
+    Object.entries(CFG.types || {}).forEach(([k, v]) => { types[norm(k)] = typeof v === "string" ? { immagine: v } : v; });
     if (!CFG.typesUrl) return;
     try {
       const rows = await fetchTable(CFG.typesUrl);
-      rows.forEach(r => { const k = r.prodotto || r.tipo; if (k) types[k.trim().toLowerCase()] = r; });
+      rows.forEach(r => { const k = r.prodotto || r.tipo; if (k) types[norm(k)] = r; });
     } catch (e) {
-      console.warn("Tipologie non caricate:", e);
+      console.warn("Prodotti non caricati:", e);
     }
   }
-  function typeInfo(d) { return types[String(d.prodotto || d.tipo || "").trim().toLowerCase()] || {}; }
+  // Trova il prodotto del sito per una console: prima "Linea + Prodotto" (Skill + Run = Skillrun),
+  // poi la sola Linea (Technogym Ride), il solo Prodotto o il Tipo.
+  function typeInfo(d) {
+    const candidates = [norm((d.linea || "") + (d.prodotto || "")), norm(d.linea), norm(d.prodotto), norm(d.tipo)];
+    for (const c of candidates) if (c && types[c]) return types[c];
+    return {};
+  }
 
   // Una cella può contenere più link a immagini, separati da spazio, virgola o a capo.
   // I link di Google Drive ("Condividi > chiunque abbia il link") vengono convertiti
