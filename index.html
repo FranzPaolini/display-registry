@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Display Registry</title>
-<link rel="stylesheet" href="style.css?v=20261123">
-<script src="config.js?v=20261123"></script>
-<script src="app.js?v=20261123"></script>
-<script src="equipment.js?v=20261123"></script>
+<link rel="stylesheet" href="style.css?v=20261124">
+<script src="config.js?v=20261124"></script>
+<script src="app.js?v=20261124"></script>
+<script src="equipment.js?v=20261124"></script>
 </head>
 <body>
 <header class="top">
@@ -149,7 +149,7 @@
         <div class="product-head">
           <div class="head-top">
             <nav class="crumbs"><a href="${listHref()}">Tutti i display</a>${[d.linea, d.prodotto].filter(Boolean).map(x => `<span>•</span><span>${esc(x)}</span>`).join("")}</nav>
-            <!-- ID e badge del display: nascosti per ora -->
+            <div class="head-tags"><span class="code">${esc(d.id)}</span></div>
           </div>
           <h1>${esc(d.nome || d.id)}</h1>
           <p class="subtitle">${esc(subtitle)}</p>
@@ -234,7 +234,7 @@
         <a class="tile" href="#${esc(d.id)}">
           <div class="tile-media">${productVisual(d)}</div>
           <div class="tile-body">
-            <div class="tile-kicker">${[d.linea, d.prodotto].filter(Boolean).map(esc).join(" · ")}</div>
+            <div class="tile-kicker">${[d.id, d.linea, d.prodotto].filter(Boolean).map(esc).join(" · ")}</div>
             <div class="tile-name">${esc(d.nome || "")}</div>
             <div class="tile-specs">${[d.pollici && d.pollici + "″", d.risoluzione, d.versione_hw, d.versione && `SW ${d.versione}`].filter(Boolean).map(esc).join(" · ")}</div>
             <div class="tile-badges">${d.stato ? `<span class="badge ${stateClass(d.stato)}">${esc(d.stato)}</span>` : ""}${versionBadge(d)}</div>
