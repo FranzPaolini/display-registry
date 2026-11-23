@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Display Registry</title>
-<link rel="stylesheet" href="style.css?v=20261124">
-<script src="config.js?v=20261124"></script>
-<script src="app.js?v=20261124"></script>
-<script src="equipment.js?v=20261124"></script>
+<link rel="stylesheet" href="style.css?v=20261125">
+<script src="config.js?v=20261125"></script>
+<script src="app.js?v=20261125"></script>
+<script src="equipment.js?v=20261125"></script>
 </head>
 <body>
 <header class="top">
@@ -148,7 +148,6 @@
       <section class="product">
         <div class="product-head">
           <div class="head-top">
-            <nav class="crumbs"><a href="${listHref()}">Tutti i display</a>${[d.linea, d.prodotto].filter(Boolean).map(x => `<span>•</span><span>${esc(x)}</span>`).join("")}</nav>
             <div class="head-tags"><span class="code">${esc(d.id)}</span></div>
           </div>
           <h1>${esc(d.nome || d.id)}</h1>
