@@ -112,7 +112,6 @@
       aggiornato_il: d.aggiornato_il ? fmtDate(d.aggiornato_il) : "" };
     const n = daysSince(d.aggiornato_il);
     const stale = n !== null && n > (CFG.staleAfterDays || 14);
-    const subtitle = d.descrizione || typeInfo(d).descrizione || [d.prodotto, d.modello].filter(Boolean).join(" · ");
 
     const extra = Object.entries(d).filter(([k, v]) => !KNOWN.has(k) && v !== "" && v != null);
     const groups = [...GROUPS];
@@ -151,7 +150,7 @@
             <div class="head-tags"><span class="code">${esc(d.id)}</span></div>
           </div>
           <h1>${esc(d.nome || d.id)}</h1>
-          <p class="subtitle">${esc(subtitle)}</p>
+          ${d.prodotto ? `<p class="subtitle">${esc(d.prodotto)}</p>` : ""}
         </div>
         <div class="stage">
           <div class="stage-track" id="track">${sl.map((s, i) => `<div class="slide" data-i="${i}">${s.html}</div>`).join("")}</div>
