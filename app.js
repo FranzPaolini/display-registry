@@ -97,19 +97,22 @@
       .map(d => withProduct({ ...d, id: String(d.id).trim() }));
   }
 
-  // Le specifiche del prodotto (scheda Prodotti, prese dal sito) valgono per ogni console
-  // di quel prodotto; un valore scritto nella riga del display ha la precedenza.
+  // Chi decide cosa: per ciò che c'è sul tavolo (diagonale, risoluzione, pannello, bonding,
+  // hardware, versioni) vale il foglio Display. Dalla scheda Prodotti, presa dal sito, arrivano
+  // solo le voci che il foglio non ha: touch, audio, cardiofrequenza, connettività e link.
+  // Un valore scritto nella riga del display ha sempre la precedenza.
+  const FROM_PRODUCT = new Set(["tipo", "touch", "cardiofrequenza", "ram", "audio", "rete", "lettore_nfc",
+    "connessioni_esterne", "apple_gymkit", "pagina_sito"]);
   // Le voci della console descritta sul sito valgono solo se la console sul tavolo ha la
-  // stessa diagonale (es. una Skillrun da 10" non eredita il "22"" della pagina prodotto).
-  const PRODUCT_ONLY = new Set(["immagine", "descrizione", "fonte"]);
-  const CONSOLE_FIELDS = new Set(["tipo_console", "pollici", "touch", "pannello", "risoluzione"]);
+  // stessa diagonale (es. una console da 10" non eredita il touch di quella da 22").
+  const CONSOLE_FIELDS = new Set(["touch"]);
   const inches = v => parseFloat(String(v ?? "").replace(",", "."));
   function withProduct(d) {
     const p = typeInfo(d);
     const merged = {};
     const otherConsole = inches(d.pollici) && inches(p.pollici) && inches(d.pollici) !== inches(p.pollici);
     Object.entries(p).forEach(([k, v]) => {
-      if (v === "" || v == null || PRODUCT_ONLY.has(k)) return;
+      if (v === "" || v == null || !FROM_PRODUCT.has(k)) return;
       if (otherConsole && CONSOLE_FIELDS.has(k)) return;
       merged[k] = v;
     });

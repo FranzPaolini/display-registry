@@ -19,7 +19,7 @@ import re
 import sys
 import urllib.request
 
-COLUMNS = ["Prodotto", "Linea", "Pagina sito", "Immagine", "Tipo console", "Pollici", "Pannello",
+COLUMNS = ["Prodotto", "Tipo", "Pagina sito", "Immagine", "Tipo console", "Pollici", "Pannello",
            "Touch", "Cardiofrequenza", "RAM", "Audio", "Rete", "Lettore NFC", "Connessioni esterne",
            "Apple GymKit", "Descrizione", "Fonte"]
 
@@ -86,7 +86,7 @@ def parse(url, page):
         row["Prodotto"] = parts[0] if parts else ""
         row["Descrizione"] = parts[1].capitalize() if len(parts) > 1 else ""
     hint = (row["Prodotto"] + " " + row["Descrizione"]).lower()
-    row["Linea"] = "Strength" if re.search(STRENGTH, hint) else "Cardio" if re.search(CARDIO, hint) else ""
+    row["Tipo"] = "Strength" if re.search(STRENGTH, hint) else "Cardio" if re.search(CARDIO, hint) else ""
     gallery = (re.search(r"https://[^\"'\s>]+?-gallery01\.jpg", page)
                or re.search(r"https://webapi-prod\.technogym\.com/dw/image/[^\"'\s>]+?/product/[^\"'\s>]+?\.jpg", page))
     if gallery:
