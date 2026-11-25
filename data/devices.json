@@ -262,5 +262,29 @@
     "note": "",
     "descrizione": "",
     "immagine_prodotto": ""
+  },
+  {
+    "id": "DSP-012",
+    "nome": "Technogym Ciccia",
+    "tipo": "Cardio",
+    "linea": "Technogym Bike",
+    "prodotto": "Bike",
+    "modello": "Console Live 22\"",
+    "pollici": "22",
+    "risoluzione": "1920x1080",
+    "pannello": "LCD",
+    "bonding": "No",
+    "versione_hw": "HW4+",
+    "ram": "",
+    "sistema_operativo": "Technogym OS",
+    "software": "",
+    "versione": "x.19.5",
+    "aggiornato_il": "2026-11-20",
+    "stato": "Attivo",
+    "posizione": "Scaffalone",
+    "referente": "FPaolini",
+    "note": "",
+    "descrizione": "",
+    "immagine_prodotto": ""
   }
 ]
