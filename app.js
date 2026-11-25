@@ -74,12 +74,17 @@
     const rows = await firstTable([CFG.typesUrl, "data/prodotti.csv"], t => Array.isArray(t) && t.some(r => r.prodotto));
     (rows || []).forEach(r => { const k = r.prodotto || r.tipo; if (k) types[norm(k)] = r; });
   }
-  // Trova il prodotto del sito per una console: prima "Linea + Prodotto" (Skill + Run = Skillrun),
-  // poi la sola Linea (Technogym Ride), il solo Prodotto o il Tipo.
+  // Trova il prodotto del sito per una console. Prima un nome identico: "Linea + Prodotto"
+  // (Skill + Run = Skillrun), la sola Linea (Technogym Ride), il solo Prodotto, il Tipo o il Nome.
+  // Se non basta, vale il prodotto il cui nome è contenuto in Linea, Prodotto o Nome
+  // (es. "Nwe Artis Run" contiene "Artis Run"): vince il nome più lungo.
   function typeInfo(d) {
-    const candidates = [norm((d.linea || "") + (d.prodotto || "")), norm(d.linea), norm(d.prodotto), norm(d.tipo)];
-    for (const c of candidates) if (c && types[c]) return types[c];
-    return {};
+    const parts = [norm(d.linea), norm(d.prodotto), norm(d.nome)];
+    const exact = [norm((d.linea || "") + (d.prodotto || "")), ...parts, norm(d.tipo)];
+    for (const c of exact) if (c && types[c]) return types[c];
+    const hay = parts.join("|");
+    const keys = Object.keys(types).filter(k => k.length >= 5 && hay.includes(k)).sort((x, y) => y.length - x.length);
+    return keys.length ? types[keys[0]] : {};
   }
 
   // Una cella può contenere più link a immagini, separati da spazio, virgola o a capo.
