@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Display Registry</title>
-<link rel="stylesheet" href="style.css?v=20261134">
-<script src="config.js?v=20261134"></script>
-<script src="app.js?v=20261134"></script>
-<script src="equipment.js?v=20261134"></script>
+<link rel="stylesheet" href="style.css?v=20261135">
+<script src="config.js?v=20261135"></script>
+<script src="app.js?v=20261135"></script>
+<script src="equipment.js?v=20261135"></script>
 </head>
 <body>
 <header class="top">
@@ -130,7 +130,7 @@
     const specHtml = groups.map((g, i) => {
       const rows = g.rows.filter(([k]) => data[k] !== undefined && data[k] !== "");
       if (!rows.length) return "";
-      return `<details class="spec-group" ${i < 3 || window.innerWidth > 800 ? "open" : ""}>
+      return `<details class="spec-group">
         <summary><h3>${g.title}</h3><span class="chev" aria-hidden="true"></span></summary>
         <dl>${rows.map(([k, l, suf]) => `<div class="spec-row"><dt>${esc(l)}</dt><dd>${value(k, suf)}</dd></div>`).join("")}</dl>
       </details>`;
