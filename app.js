@@ -31,7 +31,23 @@
     if (!res.ok) throw new Error("Impossibile caricare i dati (" + res.status + ")");
     const text = await res.text();
     const trimmed = text.trim();
+    // Un foglio non pubblicato risponde con una pagina di accesso HTML: non sono dati.
+    if (trimmed.startsWith("<")) throw new Error("Risposta non valida (foglio non pubblicato?)");
     return trimmed.startsWith("[") || trimmed.startsWith("{") ? JSON.parse(trimmed) : parseCSV(text);
+  }
+
+  // Legge la prima fonte che funziona e ha righe; le altre sono di riserva (file nel repo).
+  async function firstTable(sources, hasRows) {
+    for (const src of sources.filter(Boolean)) {
+      try {
+        const t = await fetchTable(src);
+        if (hasRows(t)) return t;
+        console.warn("Nessun dato utile in", src);
+      } catch (e) {
+        console.warn("Dati non caricati da", src, e);
+      }
+    }
+    return null;
   }
 
   // Ultime versioni lette dalla scheda "Ultime versioni" del Google Sheet
@@ -55,13 +71,8 @@
   const norm = v => String(v ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
   async function loadTypes() {
     Object.entries(CFG.types || {}).forEach(([k, v]) => { types[norm(k)] = typeof v === "string" ? { immagine: v } : v; });
-    if (!CFG.typesUrl) return;
-    try {
-      const rows = await fetchTable(CFG.typesUrl);
-      rows.forEach(r => { const k = r.prodotto || r.tipo; if (k) types[norm(k)] = r; });
-    } catch (e) {
-      console.warn("Prodotti non caricati:", e);
-    }
+    const rows = await firstTable([CFG.typesUrl, "data/prodotti.csv"], t => Array.isArray(t) && t.some(r => r.prodotto));
+    (rows || []).forEach(r => { const k = r.prodotto || r.tipo; if (k) types[norm(k)] = r; });
   }
   // Trova il prodotto del sito per una console: prima "Linea + Prodotto" (Skill + Run = Skillrun),
   // poi la sola Linea (Technogym Ride), il solo Prodotto o il Tipo.
@@ -91,10 +102,11 @@
   }
 
   async function loadDevices() {
-    const [list] = await Promise.all([fetchTable(CFG.dataUrl || "data/devices.json"), loadLatestVersions(), loadTypes()]);
-    return (Array.isArray(list) ? list : list.devices || [])
-      .filter(d => d && d.id)
-      .map(d => withProduct({ ...d, id: String(d.id).trim() }));
+    const rowsOf = t => (Array.isArray(t) ? t : (t && t.devices) || []).filter(d => d && d.id);
+    const [table] = await Promise.all([
+      firstTable([CFG.dataUrl, "data/devices.json"], t => rowsOf(t).length > 0), loadLatestVersions(), loadTypes()]);
+    if (!table) throw new Error("Impossibile caricare i dati");
+    return rowsOf(table).map(d => withProduct({ ...d, id: String(d.id).trim() }));
   }
 
   // Chi decide cosa: per ciò che c'è sul tavolo (diagonale, risoluzione, pannello, bonding,

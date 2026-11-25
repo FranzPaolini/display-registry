@@ -1,23 +1,19 @@
 // Configurazione del Display Registry.
 // Modifica solo questo file per adattare l'app al tuo team.
 window.REGISTRY_CONFIG = {
-  // Da dove leggere i dati. Due opzioni:
-  //  1) "data/devices.json"  -> file nel repo (si modifica da GitHub)
-  //  2) URL di un Google Sheet pubblicato come CSV
-  //     (File > Condividi > Pubblica sul web > formato CSV), es:
-  //     "https://docs.google.com/spreadsheets/d/e/XXXX/pub?output=csv"
-  dataUrl: "data/devices.json",
+  // Link CSV delle tab del Google Sheet (File > Condividi > Pubblica sul web > scegli la tab > CSV).
+  // Con i link impostati il sito segue il foglio da solo (aggiornamento entro pochi minuti).
+  // Se un link è vuoto o non risponde, si usano i file nel repo (data/devices.json, data/prodotti.csv).
+  dataUrl: "",   // tab Display
 
   // URL pubblico del sito (serve per generare i QR).
   // Lascia vuoto per usare automaticamente l'indirizzo corrente.
   publicBaseUrl: "https://franzpaolini.github.io/display-registry/",
 
-  // Link CSV della scheda "Prodotti" del Google Sheet (opzionale):
-  // un'immagine per ogni prodotto (Run, Bike…), usata quando il display non ha la sua.
-  typesUrl: "data/prodotti.csv",
+  // Tab Prodotti: foto e specifiche prese dal sito Technogym, una riga per prodotto.
+  typesUrl: "",
 
-  // Link CSV della scheda "Ultime versioni" del Google Sheet (opzionale).
-  // Se impostato, sostituisce la lista latestVersions qui sotto.
+  // Tab Ultime versioni (opzionale). Se impostato, sostituisce la lista latestVersions qui sotto.
   latestVersionsUrl: "",
 
   // Ultima versione rilasciata per ogni software (usata se latestVersionsUrl è vuoto).
