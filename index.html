@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Display Registry</title>
-<link rel="stylesheet" href="style.css?v=20261129">
-<script src="config.js?v=20261129"></script>
-<script src="app.js?v=20261129"></script>
-<script src="equipment.js?v=20261129"></script>
+<link rel="stylesheet" href="style.css?v=20261131">
+<script src="config.js?v=20261131"></script>
+<script src="app.js?v=20261131"></script>
+<script src="equipment.js?v=20261131"></script>
 </head>
 <body>
 <header class="top">
@@ -85,16 +85,19 @@
     </svg>`;
   }
 
+  // Foto con sfondo bianco (colonna "Sfondo immagine" = bianco nella tab Prodotti): lo sfondo
+  // si fonde con quello della scheda.
+  const whiteBg = d => /bianc/i.test(typeInfo(d).sfondo_immagine || "") && !images(d.immagine_prodotto).length ? ' class="img-white"' : "";
   function productVisual(d) {
     const img = productImages(d)[0];
-    return img ? `<img src="${esc(img)}" alt="${esc(d.prodotto || d.modello || "Prodotto")}" loading="lazy">` : placeholder(d);
+    return img ? `<img${whiteBg(d)} src="${esc(img)}" alt="${esc(d.prodotto || d.modello || "Prodotto")}" loading="lazy">` : placeholder(d);
   }
 
   // Galleria: prodotto di riferimento (una o più immagini) + dimensione del display.
   function slides(d) {
     const imgs = productImages(d);
     const s = imgs.length
-      ? imgs.map((u, i) => ({ label: imgs.length > 1 ? `Prodotto ${i + 1}` : "Prodotto", html: `<img src="${esc(u)}" alt="${esc(d.prodotto || d.nome || d.id)}">` }))
+      ? imgs.map((u, i) => ({ label: imgs.length > 1 ? `Prodotto ${i + 1}` : "Prodotto", html: `<img${whiteBg(d)} src="${esc(u)}" alt="${esc(d.prodotto || d.nome || d.id)}">` }))
       : [{ label: "Prodotto", html: placeholder(d) }];
     if (d.pollici || d.risoluzione) s.push({ label: "Dimensione display", html: sizeSvg(d) });
     return s;

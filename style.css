@@ -6,6 +6,7 @@
   --bad: #c0281c; --bad-bg: #fbe5e3;
   --info: #2d55d8; --info-bg: #e6ecfd;
   --neutral: #444; --neutral-bg: #ececea;
+  --img-blend: multiply; --img-filter: brightness(1.05);
   --sil-bezel: #1b1b1b; --sil-screen-a: #3a4250; --sil-screen-b: #11151b;
 }
 @media (prefers-color-scheme: dark) {
@@ -17,6 +18,7 @@
     --bad: #ff8a80; --bad-bg: #3a1716;
     --info: #9db3ff; --info-bg: #1b2547;
     --neutral: #cfcfcf; --neutral-bg: #262628;
+    --img-blend: normal; --img-filter: none;
     --sil-bezel: #050505; --sil-screen-a: #4a5466; --sil-screen-b: #1a1f27;
     color-scheme: dark;
   }
@@ -29,6 +31,7 @@
     --bad: #ff8a80; --bad-bg: #3a1716;
     --info: #9db3ff; --info-bg: #1b2547;
     --neutral: #cfcfcf; --neutral-bg: #262628;
+    --img-blend: normal; --img-filter: none;
     --sil-bezel: #050505; --sil-screen-a: #4a5466; --sil-screen-b: #1a1f27;
     color-scheme: dark;
 }
@@ -83,7 +86,7 @@ a { color: inherit; text-decoration: none; }
   font-size: clamp(15px, 2vw, 20px); color: var(--muted); margin: 0; text-transform: uppercase; letter-spacing: .03em;
 }
 .stage { position: relative; overflow: hidden; max-width: 1200px; margin: 0 auto; }
-.stage-track { display: flex; transition: transform .35s ease; }
+.stage-track { display: flex; transition: transform .35s ease; background: var(--stage); }
 .slide { flex: 0 0 100%; height: clamp(320px, 52vw, 560px); display: flex; align-items: center; justify-content: center; padding: 16px 24px 64px; }
 .slide .equip, .slide img { width: 100%; height: 100%; object-fit: contain; }
 .stage-pills {
@@ -111,6 +114,9 @@ a { color: inherit; text-decoration: none; }
 .silg-a { stop-color: var(--sil-screen-a); } .silg-b { stop-color: var(--sil-screen-b); }
 .sil-diag { stroke: rgba(255,255,255,.35); stroke-width: 1; stroke-dasharray: 4 4; }
 .sil-label { fill: #fff; font: 700 22px "Helvetica Neue", Arial, sans-serif; }
+
+/* Foto con sfondo bianco: in chiaro si fonde con il fondo della scheda (multiply), in scuro resta com'è */
+.img-white { mix-blend-mode: var(--img-blend); filter: var(--img-filter); }
 
 /* Segnaposto prodotto senza immagine */
 .ph-name { fill: var(--text); opacity: .16; font: 300 64px "Helvetica Neue", Arial, sans-serif; letter-spacing: .04em; }
