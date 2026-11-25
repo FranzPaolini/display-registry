@@ -118,6 +118,8 @@
   // Le voci della console descritta sul sito valgono solo se la console sul tavolo ha la
   // stessa diagonale (es. una console da 10" non eredita il touch di quella da 22").
   const CONSOLE_FIELDS = new Set(["touch"]);
+  // Una cella vuota o con solo un trattino ("-") vale "non indicato".
+  const isBlank = v => v == null || /^\s*[-–—]*\s*$/.test(String(v));
   const inches = v => parseFloat(String(v ?? "").replace(",", "."));
   function withProduct(d) {
     const p = typeInfo(d);
@@ -128,7 +130,7 @@
       if (otherConsole && CONSOLE_FIELDS.has(k)) return;
       merged[k] = v;
     });
-    Object.entries(d).forEach(([k, v]) => { if (v !== "" && v != null) merged[k] = v; else if (!(k in merged)) merged[k] = v; });
+    Object.entries(d).forEach(([k, v]) => { if (!isBlank(v)) merged[k] = v; else if (!(k in merged)) merged[k] = ""; });
     return merged;
   }
 
@@ -169,5 +171,5 @@
     return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
 
-  window.Registry = { CFG, loadDevices, typeInfo, images, productImages, versionStatus, daysSince, deviceUrl, esc };
+  window.Registry = { CFG, isBlank, loadDevices, typeInfo, images, productImages, versionStatus, daysSince, deviceUrl, esc };
 })();

@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Display Registry</title>
-<link rel="stylesheet" href="style.css?v=20261136">
-<script src="config.js?v=20261136"></script>
-<script src="app.js?v=20261136"></script>
-<script src="equipment.js?v=20261136"></script>
+<link rel="stylesheet" href="style.css?v=20261137">
+<script src="config.js?v=20261137"></script>
+<script src="app.js?v=20261137"></script>
+<script src="equipment.js?v=20261137"></script>
 </head>
 <body>
 <header class="top">
@@ -19,7 +19,7 @@
 
 <script>
 (async function () {
-  const { CFG, loadDevices, typeInfo, images, productImages, versionStatus, daysSince, esc } = Registry;
+  const { CFG, isBlank, loadDevices, typeInfo, images, productImages, versionStatus, daysSince, esc } = Registry;
   const { geometry, physicalSize, sizeSvg } = Equipment;
   const app = document.getElementById("app");
   document.getElementById("brand").textContent = CFG.title || "Display Registry";
@@ -116,7 +116,7 @@
     const n = daysSince(d.aggiornato_il);
     const stale = n !== null && n > (CFG.staleAfterDays || 14);
 
-    const extra = Object.entries(d).filter(([k, v]) => !KNOWN.has(k) && v !== "" && v != null);
+    const extra = Object.entries(d).filter(([k, v]) => !KNOWN.has(k) && !isBlank(v));
     const groups = [...GROUPS];
     if (extra.length) groups.push({ title: "Altre informazioni", rows: extra.map(([k]) => [k, k.replace(/_/g, " ")]) });
 
@@ -128,7 +128,7 @@
       return esc(v) + (suf || "");
     };
     const specHtml = groups.map((g, i) => {
-      const rows = g.rows.filter(([k]) => data[k] !== undefined && data[k] !== "");
+      const rows = g.rows.filter(([k]) => !isBlank(data[k]));
       if (!rows.length) return "";
       return `<details class="spec-group">
         <summary><h3>${g.title}</h3><span class="chev" aria-hidden="true"></span></summary>
