@@ -23,5 +23,9 @@ window.REGISTRY_CONFIG = {
   // Dopo quanti giorni senza aggiornamento dei dati mostrare un avviso.
   staleAfterDays: 14,
 
+  // Sezioni della scheda nascoste per ora. Per mostrarle di nuovo, toglile dall'elenco.
+  // Valori possibili: "software" (versione installata e gruppo Software), "collocazione".
+  nascondi: ["software", "collocazione"],
+
   title: "Display Lab"
 };

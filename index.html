@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Display Registry</title>
-<link rel="stylesheet" href="style.css?v=20261138">
-<script src="config.js?v=20261138"></script>
-<script src="app.js?v=20261138"></script>
-<script src="equipment.js?v=20261138"></script>
+<link rel="stylesheet" href="style.css?v=20261139">
+<script src="config.js?v=20261139"></script>
+<script src="app.js?v=20261139"></script>
+<script src="equipment.js?v=20261139"></script>
 </head>
 <body>
 <header class="top">
@@ -22,6 +22,8 @@
   const { CFG, isBlank, loadDevices, typeInfo, images, productImages, versionStatus, daysSince, esc } = Registry;
   const { geometry, physicalSize, sizeSvg } = Equipment;
   const app = document.getElementById("app");
+  // Sezioni nascoste per ora: elenco "nascondi" in config.js ("software", "collocazione").
+  const hidden = new Set((CFG.nascondi || []).map(x => String(x).toLowerCase()));
   document.getElementById("brand").textContent = CFG.title || "Display Registry";
 
   // Gruppi della scheda tecnica, sul modello delle sezioni "Console and Display" e
@@ -117,7 +119,7 @@
     const stale = n !== null && n > (CFG.staleAfterDays || 14);
 
     const extra = Object.entries(d).filter(([k, v]) => !KNOWN.has(k) && !isBlank(v));
-    const groups = [...GROUPS];
+    const groups = GROUPS.filter(g => !hidden.has(g.title.toLowerCase()));
     if (extra.length) groups.push({ title: "Altre informazioni", rows: extra.map(([k]) => [k, k.replace(/_/g, " ")]) });
 
     const value = (k, suf) => {
@@ -165,7 +167,7 @@
         ${hl.map(([l, v]) => `<div class="hl"><span class="hl-value">${v}</span><span class="hl-label">${l}</span></div>`).join("")}
       </section>
 
-      <section class="block" id="software">
+      ${hidden.has("software") ? "" : `<section class="block" id="software">
         <h2>Software installato</h2>
         <div class="sw-card ${vs.kind}">
           <div>
@@ -180,7 +182,7 @@
               : `Dati aggiornati ${n === 0 ? "oggi" : n === 1 ? "ieri" : n + " giorni fa"}${stale ? ", da verificare" : ""}`}</div>
           </div>
         </div>
-      </section>
+      </section>`}
 
       <section class="block" id="specifiche">
         <h2>Specifiche tecniche</h2>
@@ -222,7 +224,7 @@
       <section class="list-head">
         <nav class="crumbs"><span>Tutti i display</span></nav>
         <h1>I nostri display</h1>
-        <div class="list-stats"><span><b>${list.length}</b> display</span><span><b>${outdated}</b> da aggiornare</span><span><b>${broken}</b> guasti</span></div>
+        <div class="list-stats"><span><b>${list.length}</b> display</span>${hidden.has("software") ? "" : `<span><b>${outdated}</b> da aggiornare</span>`}${hidden.has("collocazione") ? "" : `<span><b>${broken}</b> guasti</span>`}</div>
         <input id="q" class="search" type="search" placeholder="Cerca per ID, prodotto, HW, versione…">
       </section>
       <div class="grid" id="list"></div>`;
@@ -237,8 +239,8 @@
           <div class="tile-body">
             <div class="tile-kicker">${[d.id, d.linea, d.prodotto].filter(Boolean).map(esc).join(" · ")}</div>
             <div class="tile-name">${esc(d.nome || "")}</div>
-            <div class="tile-specs">${[d.pollici && d.pollici + "″", d.risoluzione, d.versione_hw, d.versione && `SW ${d.versione}`].filter(Boolean).map(esc).join(" · ")}</div>
-            <div class="tile-badges">${d.stato ? `<span class="badge ${stateClass(d.stato)}">${esc(d.stato)}</span>` : ""}${versionBadge(d)}</div>
+            <div class="tile-specs">${[d.pollici && d.pollici + "″", d.risoluzione, d.versione_hw, !hidden.has("software") && d.versione && `SW ${d.versione}`].filter(Boolean).map(esc).join(" · ")}</div>
+            <div class="tile-badges">${!hidden.has("collocazione") && d.stato ? `<span class="badge ${stateClass(d.stato)}">${esc(d.stato)}</span>` : ""}${hidden.has("software") ? "" : versionBadge(d)}</div>
           </div>
         </a>`;
       }).join("") || `<p class="empty">Nessun risultato</p>`;
